@@ -1,0 +1,223 @@
+{
+  "device":{
+    "name":"Logitech G502 X Lightspeed",
+    "id":"046d:409f"
+  },
+
+  // see https://docs.rs/evdev/latest/evdev/struct.KeyCode.html for acceptable io values
+  "input":{
+    "left_click":"BTN_LEFT",
+    "right_click":"BTN_RIGHT",
+    "middle_click":"BTN_MIDDLE",
+    "back_thumb":"BTN_BACK",
+    "forward_thumb":"BTN_FORWARD",
+    "sniper":"BTN_6",//INCORRECT FOR G502
+    "G7":"BTN_7",//INCORRECT FOR G502
+    "G8":"BTN_8",//INCORRECT FOR G502
+    "G9":"BTN_9",//INCORRECT FOR G502
+    "analog_up":{ "axis":"REL_Y", "delta":-1 },// Will need a unique handler for RELs unless evdev has something built in
+    "analog_down":{ "axis":"REL_Y", "delta":1 },
+    "analog_left":{ "axis":"REL_X", "delta":-1 },
+    "analog_right":{ "axis":"REL_X", "delta":1 },
+    "scroll_up":{ "axis":"REL_WHEEL", "delta":1 },
+    "scroll_down":{ "axis":"REL_WHEEL", "delta":-1 },
+    "scroll_left":{ "axis":"REL_HWHEEL", "delta":-1 },
+    "scroll_right":{ "axis":"REL_HWHEEL", "delta":1 }
+  },
+  "output":{
+    // Do not change this. These are the game's default controls.
+    // Instead, add entries to "rebound" mirroring the structure found here.
+    "default":{//DEV program should be able to run without a default section as long as all used outputs have mappings
+      "walking":{//handled
+        "move_up":"KEY_W",
+        "move_down":"KEY_S",
+        "move_left":"KEY_A",
+        "move_right":"KEY_D",
+        "start_climbing":"BTN_LEFT",
+        "speed_walk":"KEY_LEFTSHIFT",
+        "take_a_running_start":"KEY_LEFTCTRL",
+        "jump":"KEY_SPACE",
+        "recall_climbot":"KEY_Q"
+      },
+      "walking_and_climbing": {//handled
+        "interact":"KEY_E",
+        "scope_the_wall":"KEY_TAB",
+        "grab_rope":"KEY_LEFTSHIFT"
+      },
+      "climbing": {//handled
+        "move_up":"KEY_W",
+        "move_down":"KEY_S",
+        "move_left":"KEY_A",
+        "move_right":"KEY_D",
+        "climb": "BTN_LEFT",
+        "cancel_last_action":"BTN_RIGHT",
+        "recover_stamina": "KEY_Q",
+        "fall_rewind": "KEY_R",//get good
+        "manual_limb_selection": "KEY_SPACE"
+      },
+      "rappelling": {//need to figure out what this even is
+        "jump": "KEY_SPACE",
+        "slide": "KEY_LEFTALT"
+      },
+      "manual_limb_selection": {//handled
+        "left_hand": "KEY_W",
+        "right_hand": "KEY_D",
+        "right_foot": "KEY_S",
+        "left_foot": "KEY_A"
+      },
+      "quick_actions": {//handled
+        "action_1": "KEY_1",
+        "action_2": "KEY_2",
+        "action_3": "KEY_3",
+        "action_4": "KEY_4",
+        "alternate_quick_actions": "KEY_X"
+      },
+      "remote_view": {//handled
+        "display_route": "KEY_LEFTALT",
+        "check_map": "KEY_T",
+        "raise_the_camera": "KEY_E",
+        "lower_the_camera": "KEY_Q"
+        //HARD-BINDS: scroll wheel zooms in and out.
+      },
+      "backpack": {//handled
+        "use": "KEY_E",
+        "compost": "KEY_Q",
+        "shake_up_bag": "KEY_C",// Doing this by shaking the mouse would be so cool!!!
+        "grab": "KEY_LEFT",
+        "rotate_left": "KEY_A",
+        "rotate_right": "KEY_D"
+      }
+      //HARD-BINDS: esc pauses/exits, right click exits.
+    },
+/****************************************************************\
+)                USER-DEFINED SECTION STARTS HERE                (
+\****************************************************************/
+    "rebound": {//DEV program should be able to run without a rebound section as long as all used outputs have mappings. //DEV warn user about rebinds at program start
+      // Use the same structure here as in the "default" section above.
+      "walking":{
+        "jump":"climbing/manual_limb_selection",//DEV this will evaluate to same as default bind. Must make sure not to warn user about this one.
+        "recall_climbot":"climbing/recover_stamina"
+      },
+      "climbing":{
+        "move_up":"KEY_UP",
+        "move_down":"KEY_DOWN",
+        "move_left":"KEY_LEFT",
+        "move_right":"KEY_RIGHT",
+        "climbing":"null",
+        "cancel_last_action":"walking/move_up",
+        "recover_stamina":"KEY_V"
+      },
+      "manual_limb_selection": {
+        "left_hand": "KEY_L",
+        "right_hand": "KEY_R",
+        "right_foot": "KEY_BACKSLASH",
+        "left_foot": "KEY_SLASH"
+      },
+      "remote_view": {
+        "check_map": "walking_and_climbing/scope_the_wall",//Must test if this distinction exists in game. Can press check_map while on ground?
+        "raise_the_camera": "walking/speed_walk",
+        "lower_the_camera": "walking/take_a_running_start"
+      },
+      "backpack": {
+        //"shake_up_bag": "KEY_C",// Doing this by shaking the mouse would be so cool!!!
+        "use":"manual_limb_selection/right_hand",
+        "compost":"climbing/recover_stamina",
+        "rotate_left": "walking/take_a_running_start",
+        "rotate_right": "walking/speed_walk"
+      },
+      "null":"KEY_0"
+    }
+  }
+  "mappings": {
+    /*
+    
+    Modifiers: MOD_MOV, MOD_ARM
+    //MOV_MOD must prevent MOD_ARM so player can look around while strafing.
+    //MOD_ARM has multiple activators. MOD_ARM stays active as long as any one of them is active.
+    
+    //MOVEMENT
+    sniper://Consider making forward thumb button into movement button
+        Controls MOD_MOV.
+        MOD_MOV+sniper = walking/move_up
+        MOD_MOV+sniper+left_click = walking/move_left
+        MOD_MOV+sniper+right_click = walking/move_right
+        MOD_MOV+sniper+left_click+right_click = walking/move_down
+    
+    //LIMBS SECTION
+    left_click:
+        case MOD_MOV:
+            if right_click:
+                walking/move_down
+            else:
+                walking/move_left
+        default:
+            Activates MOD_ARM.
+            Sends left_click.
+            Down sends manual_limb_selection/left_hand.
+            Up sends climbing/manual_limb_selection.
+    right_click:
+        case MOD_MOV:
+            if not left_click:
+                walking/move_right
+        default:
+            Activates MOD_ARM.
+            Down sends manual_limb_selection/right_hand.//also backpack/use
+            Up sends climbing/manual_limb_selection.
+    forward_thumb:
+        Activates MOD_ARM.
+        Sends walking/speed_walk.//also rotates in backpack
+        Down sends manual_limb_selection/left_foot.
+        Up sends climbing/manual_limb_selection.
+    back_thumb:
+        Activates MOD_ARM.
+        Sends walking/take_a_running_start with *barely* delayed release.//also rotates in backpack
+        Down sends manual_limb_selection/right_foot.
+        Up sends climbing/manual_limb_selection.//jump is bound to manual_limb_selection. This jumps when running_start is released.
+    analog:
+        normal unless MOD_ARM is active then intercept and send climbing/move_x
+        
+    //D-PAD SECTION
+    //Requires selection variable and timer to detect second press. This timer should be set to as long as the d-pad fade-out.
+    global selection variable
+    scroll_up:
+        if second press: send quick_actions/alternate_quick_actions
+        selection = quick_actions/action_3;
+        send selection (this is a brief tap to show d-pad, not enough to choose selection)
+    scroll_down:
+        if second press: send quick_actions/alternate_quick_actions
+        selection = quick_actions/action_1;
+        send selection (this is a brief tap to show d-pad, not enough to choose selection)
+    scroll_left:
+        if second press: send quick_actions/alternate_quick_actions
+        selection = quick_actions/action_2;
+        send selection (this is a brief tap to show d-pad, not enough to choose selection)
+    scroll_right:
+        if second press: send quick_actions/alternate_quick_actions
+        selection = quick_actions/action_4;
+        send selection (this is a brief tap to show d-pad, not enough to choose selection)
+    middle_click:
+        send selection (finally able to be held) //DEV make sure this doesn't make phantom key if selection is changed while holding.
+    
+    //MAP
+    bool phase;
+    G9:
+        short:
+            if phase:
+                send remote_view/display_route
+            else:
+                send walking_and_climbing/scope_the_wall
+            phase = !phase;
+        long:
+            send KEY_ESC;
+    
+    G8://the forward one
+        Sends walking_and_climbing/interact as well as backpack/use.
+    
+    G7://the further back one
+        Sends climbing/recover_stamina.(has two matched binds)
+    
+    It would be REALLY cool if you could trigger "backpack/shake up bag" by moving the mouse up and down very quickly. Maybe I'll add a bonus input handler.
+    
+    */
+  }
+}

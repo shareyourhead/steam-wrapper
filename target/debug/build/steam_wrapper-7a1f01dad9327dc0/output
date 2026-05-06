@@ -1,0 +1,2 @@
+cargo:rerun-if-changed=profiles/
+cargo:warning=Copied profiles/cairn.json5 -> target/debug/cairn.json5
