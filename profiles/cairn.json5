@@ -137,10 +137,8 @@
   "mappings": {
 
     "left_click":{
-      "input_simple":[
-        "left_click", //accomplishing this may be way more complex than it seems
-        "MOD_ARM"
-      ],
+      "input_passthrough":true,
+      "input_simple":"MOD_ARM",
       "input_down":"manual_limb_selection/left_hand", // activates instantaneously when mapping is activated
       "input_up":"climbing/manual_limb_selection" // activates instantaneously when mapping is deactivated
     },
