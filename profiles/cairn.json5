@@ -137,14 +137,16 @@
   "mappings": {
 
     "left_click":{
-      "left_click", //this line may be way more complex than it appears
-      "MOD_ARM",
+      "input_simple":[
+        "left_click", //accomplishing this may be way more complex than it seems
+        "MOD_ARM"
+      ],
       "input_down":"manual_limb_selection/left_hand", // activates instantaneously when mapping is activated
       "input_up":"climbing/manual_limb_selection" // activates instantaneously when mapping is deactivated
     },
 
     "right_click":{
-      "MOD_ARM",
+      "input_simple":"MOD_ARM",
       "input_down":"manual_limb_selection/right_hand",
       "input_up":"climbing/manual_limb_selection"
     },
@@ -152,38 +154,40 @@
     "middle_click":{
       "input_short":{
         "input_arguments": [200], //input_short activates instantaneously if it is pressed and released within 200ms window
-        "quick_actions/alternate_quick_actions"
-      }
+        "input_simple":"quick_actions/alternate_quick_actions"
+      },
       "input_variable":{
         "input_arguments": ["var_selection"] //one arg in input_variable means read the value of that variable and send whatever is there.
       }
     },
 
     "back_thumb":{
-      "MOD_ARM",
+      "input_simple":"MOD_ARM",
       "input_delayed":{
         "input_arguments": [0,200], // input_arguments is based on whatever input type it is nested in. In this case it means there is a 0ms delay on activation, and a 200ms delay on deactivation.
-        "walking/take_a_running_start"
+        "input_simple":"walking/take_a_running_start"
       },
       "input_down":"manual_limb_selection/right_foot",
       "input_up":"climbing/manual_limb_selection"
     },
 
     "forward_thumb":{
-      "MOD_ARM",
-      "walking/speed_walk",
+      "input_simple":[
+        "MOD_ARM",
+        "walking/speed_walk"
+      ],
       "input_down":"manual_limb_selection/left_foot",
       "input_up":"climbing/manual_limb_selection"
     },
 
-    "sniper":"MOD_MOV",
+    "sniper":"MOD_MOV", //this evaluates as input_simple
 
-    "G7":"climbing/recover_stamina",
+    "G7":"climbing/recover_stamina", //this evaluates as input_simple
 
-    "G8":{
+    "G8":[  //this evaluates as input_simple
       "walking_and_climbing/interact",
       "backpack/use"
-    },
+    ],
 
     "G9":{
       "input_short":{
@@ -192,7 +196,7 @@
       },
       "input_long":{
         "input_arguments": [500], // input goes through after remaining held for at least 500ms
-        "KEY_ESC"
+        "input_simple":"KEY_ESC"
       }
     },
 
@@ -204,7 +208,7 @@
       },
       "input_delayed":{
         "input_arguments": [0,200],
-        "quick_actions/action_3"
+        "input_simple":"quick_actions/action_3"
       }
     },
 
@@ -214,7 +218,7 @@
       },
       "input_delayed":{
         "input_arguments": [0,200],
-        "quick_actions/action_1"
+        "input_simple":"quick_actions/action_1"
       }
     },
 
@@ -224,7 +228,7 @@
       },
       "input_delayed":{
         "input_arguments": [0,200],
-        "quick_actions/action_2"
+        "input_simple":"quick_actions/action_2"
       }
     },
 
@@ -234,23 +238,22 @@
       },
       "input_delayed":{
         "input_arguments": [0,200],
-        "quick_actions/action_4"
+        "input_simple":"quick_actions/action_4"
       }
-    }
+    },
 
     //Because the following entries were not defined inside input, the program knows to treat them as modifiers.
     "MOD_MOV":{
       "left_click":{ //overrides default left_click functionality while MOD_MOV is active.
         "input_combo":"left_and_right_click",
-        "walking/move_left"
+        "input_simple":"walking/move_left"
       },
       "right_click":{
         "input_combo":"left_and_right_click",
-        "walking/move_right"
+        "input_simple":"walking/move_right"
       },
       "left_and_right_click":{
-        "careful":false, // this means that the combo input will not cause any masking delay on left or right click. Additionally the full combo does not need to be released to transition back to a solo left or a right click.
-        "walking/move_down"
+        "input_arguments": ["walking/move_down",false] // the false is for careful=false. This means that the combo input will not cause any masking delay on left or right click. Additionally the full combo does not need to be released to transition back to a solo left or a right click.
       },
       "input_passive":"walking/move_up" // input_passive activates when nothing else in scope is active.
     },

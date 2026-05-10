@@ -136,113 +136,134 @@
 
   "mappings": {
 
-    // === MOVEMENT ===
-    // "modifier": activates a named flag while held. output is sent while held,
-    // but suppressed if any input in output_blocked_by is also held (those handle direction).
-    // MOD_MOV gates MOD_ARM: arm-type mappings check blocked_by and skip if MOD_MOV is active.
-    "sniper": { // Consider making forward_thumb into the movement button instead
-      "type": "modifier",
-      "flag": "MOD_MOV",
-      "output": "walking/move_up",
-      "output_blocked_by": ["left_click", "right_click"]
-    },
-
-    // === LIMBS ===
-    // "conditional": cases are checked in order; first match fires. "also_held" and "none_held"
-    // are additional per-case input guards on top of the flag check.
-    // "arm": activates flag, sends primary while held (if given), sends down/up on press/release.
-    //   passthrough: true re-emits the physical button so the game also sees the raw click.
-    //   blocked_by: arm behavior is fully suppressed if that flag is active.
-    "left_click": {
-      "type": "conditional",
-      "cases": [
-        { "flag": "MOD_MOV", "also_held": ["right_click"], "output": "walking/move_down" },
-        { "flag": "MOD_MOV",                               "output": "walking/move_left"  }
+    "left_click":{
+      "input_simple":[
+        "left_click", //accomplishing this may be way more complex than it seems
+        "MOD_ARM"
       ],
-      "default": {
-        "type": "arm",
-        "flag": "MOD_ARM",
-        "blocked_by": "MOD_MOV",
-        "passthrough": true,
-        "down": "manual_limb_selection/left_hand",
-        "up":   "climbing/manual_limb_selection"
-      }
+      "input_down":"manual_limb_selection/left_hand", // activates instantaneously when mapping is activated
+      "input_up":"climbing/manual_limb_selection" // activates instantaneously when mapping is deactivated
     },
 
-    "right_click": {
-      "type": "conditional",
-      "cases": [
-        { "flag": "MOD_MOV", "none_held": ["left_click"], "output": "walking/move_right" }
-      ],
-      "default": {
-        "type": "arm",
-        "flag": "MOD_ARM",
-        "blocked_by": "MOD_MOV",
-        "down": "manual_limb_selection/right_hand", // also backpack/use via shared rebind
-        "up":   "climbing/manual_limb_selection"
-      }
+    "right_click":{
+      "input_simple":"MOD_ARM",
+      "input_down":"manual_limb_selection/right_hand",
+      "input_up":"climbing/manual_limb_selection"
     },
 
-    "forward_thumb": { // also rotates in backpack via walking/speed_walk
-      "type": "arm",
-      "flag": "MOD_ARM",
-      "blocked_by": "MOD_MOV",
-      "primary": "walking/speed_walk",
-      "down": "manual_limb_selection/left_foot",
-      "up":   "climbing/manual_limb_selection"
-    },
-
-    // release_delay_ms: primary key is held this many ms after button release.
-    // walking/jump = climbing/manual_limb_selection so releasing back_thumb
-    // triggers a jump while running_start is still briefly active.
-    "back_thumb": { // also rotates in backpack via walking/take_a_running_start
-      "type": "arm",
-      "flag": "MOD_ARM",
-      "blocked_by": "MOD_MOV",
-      "primary": "walking/take_a_running_start",
-      "release_delay_ms": 50,
-      "down": "manual_limb_selection/right_foot",
-      "up":   "climbing/manual_limb_selection"
-    },
-
-    // "analog_intercept": passes REL events through normally; when flag is active,
-    // suppresses passthrough and sends the intercepted output key instead.
-    "analog_up":    { "type": "analog_intercept", "flag": "MOD_ARM", "intercepted": "climbing/move_up"    },
-    "analog_down":  { "type": "analog_intercept", "flag": "MOD_ARM", "intercepted": "climbing/move_down"  },
-    "analog_left":  { "type": "analog_intercept", "flag": "MOD_ARM", "intercepted": "climbing/move_left"  },
-    "analog_right": { "type": "analog_intercept", "flag": "MOD_ARM", "intercepted": "climbing/move_right" },
-
-    // === D-PAD ===
-    // "dpad_scroll": sets the shared selection variable and taps it briefly (enough to show
-    // the d-pad overlay but not long enough to commit). If the same direction is scrolled again
-    // within the d-pad fade-out window, sends alternate instead of tapping selection again.
-    "scroll_up":    { "type": "dpad_scroll", "selection": "quick_actions/action_3", "alternate": "quick_actions/alternate_quick_actions" },
-    "scroll_down":  { "type": "dpad_scroll", "selection": "quick_actions/action_1", "alternate": "quick_actions/alternate_quick_actions" },
-    "scroll_left":  { "type": "dpad_scroll", "selection": "quick_actions/action_2", "alternate": "quick_actions/alternate_quick_actions" },
-    "scroll_right": { "type": "dpad_scroll", "selection": "quick_actions/action_4", "alternate": "quick_actions/alternate_quick_actions" },
-
-    // "dpad_confirm": holds the current selection output for as long as the button is held.
-    // If selection changes while held, the old key must be released before the new one fires.
-    "middle_click": { "type": "dpad_confirm" },
-
-    // === MAP / MISC ===
-    // "short_long": fires "short" on quick release, "long" if held past threshold.
-    // "phase_toggle": owns a bool that flips each press; sends phase_false when false, phase_true when true.
-    // "long" uses a raw key code (KEY_ESC is not in the output table; implementation falls back to parse_key_code).
-    "G9": {
-      "type": "short_long",
-      "short": {
-        "type": "phase_toggle",
-        "phase_false": "walking_and_climbing/scope_the_wall",
-        "phase_true":  "remote_view/display_route"
+    "middle_click":{
+      "input_short":{
+        "input_arguments": [200], //input_short activates instantaneously if it is pressed and released within 200ms window
+        "input_simple":"quick_actions/alternate_quick_actions"
       },
-      "long": "KEY_ESC"
+      "input_variable":{
+        "input_arguments": ["var_selection"] //one arg in input_variable means read the value of that variable and send whatever is there.
+      }
     },
 
-    // "multi": presses all listed outputs simultaneously; game context determines which fires.
-    "G8": { "type": "multi", "outputs": ["walking_and_climbing/interact", "backpack/use"] },
+    "back_thumb":{
+      "input_simple":"MOD_ARM",
+      "input_delayed":{
+        "input_arguments": [0,200], // input_arguments is based on whatever input type it is nested in. In this case it means there is a 0ms delay on activation, and a 200ms delay on deactivation.
+        "input_simple":"walking/take_a_running_start"
+      },
+      "input_down":"manual_limb_selection/right_foot",
+      "input_up":"climbing/manual_limb_selection"
+    },
 
-    // walking/recall_climbot is also rebound to climbing/recover_stamina, so both resolve to KEY_V.
-    "G7": "climbing/recover_stamina"
+    "forward_thumb":{
+      "input_simple":[
+        "MOD_ARM",
+        "walking/speed_walk"
+      ],
+      "input_down":"manual_limb_selection/left_foot",
+      "input_up":"climbing/manual_limb_selection"
+    },
+
+    "sniper":"MOD_MOV", //this evaluates as input_simple
+
+    "G7":"climbing/recover_stamina", //this evaluates as input_simple
+
+    "G8":[  //this evaluates as input_simple
+      "walking_and_climbing/interact",
+      "backpack/use"
+    ],
+
+    "G9":{
+      "input_short":{
+        "input_arguments": [499],
+        "input_cycle": ["walking_and_climbing/scope_the_wall","remote_view/display_route"]
+      },
+      "input_long":{
+        "input_arguments": [500], // input goes through after remaining held for at least 500ms
+        "input_simple":"KEY_ESC"
+      }
+    },
+
+    //Because the analog inputs are omitted here they should simply behave as normal.
+    
+    "scroll_up":{
+      "input_variable":{
+        "input_arguments": ["var_selection","quick_actions/action_3"] //two args in input_variable. Write "quick_actions/action_3" to "var_selection".
+      },
+      "input_delayed":{
+        "input_arguments": [0,200],
+        "input_simple":"quick_actions/action_3"
+      }
+    },
+
+    "scroll_down":{
+      "input_variable":{
+        "input_arguments": ["var_selection","quick_actions/action_1"]
+      },
+      "input_delayed":{
+        "input_arguments": [0,200],
+        "input_simple":"quick_actions/action_1"
+      }
+    },
+
+    "scroll_left":{
+      "input_variable":{
+        "input_arguments": ["var_selection","quick_actions/action_2"]
+      },
+      "input_delayed":{
+        "input_arguments": [0,200],
+        "input_simple":"quick_actions/action_2"
+      }
+    },
+
+    "scroll_right":{
+      "input_variable":{
+        "input_arguments": ["var_selection","quick_actions/action_4"]
+      },
+      "input_delayed":{
+        "input_arguments": [0,200],
+        "input_simple":"quick_actions/action_4"
+      }
+    },
+
+    //Because the following entries were not defined inside input, the program knows to treat them as modifiers.
+    "MOD_MOV":{
+      "left_click":{ //overrides default left_click functionality while MOD_MOV is active.
+        "input_combo":"left_and_right_click",
+        "input_simple":"walking/move_left"
+      },
+      "right_click":{
+        "input_combo":"left_and_right_click",
+        "input_simple":"walking/move_right"
+      },
+      "left_and_right_click":{
+        "input_arguments": ["walking/move_down",false] // the false is for careful=false. This means that the combo input will not cause any masking delay on left or right click. Additionally the full combo does not need to be released to transition back to a solo left or a right click.
+      },
+      "input_passive":"walking/move_up" // input_passive activates when nothing else in scope is active.
+    },
+
+    "MOD_ARM":{
+      // MOD_ARM has multiple activators it should stay active as long as any one of them is activated.
+      "analog_up":"climbing/move_up",
+      "analog_down":"climbing/move_down",
+      "analog_left":"climbing/move_left",
+      "analog_right":"climbing/move_right"
+    }
   }
 }
