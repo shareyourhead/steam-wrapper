@@ -2,6 +2,9 @@ use std::fs;
 use std::path::Path;
 
 fn main() {
+
+    //Copy all .json5 files from ./profiles to ./target/debug
+
     let profiles_dir = Path::new("profiles");
     let out_dir = Path::new("target/debug");
 

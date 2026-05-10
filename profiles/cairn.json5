@@ -1,31 +1,35 @@
+// Scroll down to USER-DEFINED SECTION!
+
 {
   "device":{
     "name":"Logitech G502 X Lightspeed",
-    "id":"046d:409f"
+    "id":"046d:409f" // This is the wireless ID. It is different when plugged in.
   },
-
+  
+  // inputs acquired via evtest
   // see https://docs.rs/evdev/latest/evdev/struct.KeyCode.html for acceptable io values
   "input":{
     "left_click":"BTN_LEFT",
     "right_click":"BTN_RIGHT",
     "middle_click":"BTN_MIDDLE",
-    "back_thumb":"BTN_BACK",
-    "forward_thumb":"BTN_FORWARD",
-    "sniper":"BTN_6",//INCORRECT FOR G502
-    "G7":"BTN_7",//INCORRECT FOR G502
-    "G8":"BTN_8",//INCORRECT FOR G502
-    "G9":"BTN_9",//INCORRECT FOR G502
-    "analog_up":{ "axis":"REL_Y", "delta":-1 },// Will need a unique handler for RELs unless evdev has something built in
-    "analog_down":{ "axis":"REL_Y", "delta":1 },
-    "analog_left":{ "axis":"REL_X", "delta":-1 },
-    "analog_right":{ "axis":"REL_X", "delta":1 },
+    "back_thumb":"BTN_SIDE",
+    "forward_thumb":"BTN_EXTRA",
+    "sniper":"BTN_FORWARD",
+    "G7":"BTN_BACK",
+    "G8":"BTN_TASK",
+    "G9":280,
+    "analog_up":{ "axis":"REL_Y", "delta":-1, "noisy": true },
+    "analog_down":{ "axis":"REL_Y", "delta":1, "noisy": true },
+    "analog_left":{ "axis":"REL_X", "delta":-1, "noisy": true },
+    "analog_right":{ "axis":"REL_X", "delta":1, "noisy": true },
     "scroll_up":{ "axis":"REL_WHEEL", "delta":1 },
     "scroll_down":{ "axis":"REL_WHEEL", "delta":-1 },
     "scroll_left":{ "axis":"REL_HWHEEL", "delta":-1 },
     "scroll_right":{ "axis":"REL_HWHEEL", "delta":1 }
   },
+
   "output":{
-    // Do not change this. These are the game's default controls.
+    // DO NOT CHANGE THIS! These are the game's default controls.
     // Instead, add entries to "rebound" mirroring the structure found here.
     "default":{//DEV program should be able to run without a default section as long as all used outputs have mappings
       "walking":{//handled
@@ -92,7 +96,8 @@
 /****************************************************************\
 )                USER-DEFINED SECTION STARTS HERE                (
 \****************************************************************/
-    "rebound": {//DEV program should be able to run without a rebound section as long as all used outputs have mappings. //DEV warn user about rebinds at program start
+    // see https://docs.rs/evdev/latest/evdev/struct.KeyCode.html for acceptable io values
+    "rebinds": {//DEV program should be able to run without a rebinds section as long as all used outputs have mappings. //DEV warn user about rebinds at program start
       // Use the same structure here as in the "default" section above.
       "walking":{
         "jump":"climbing/manual_limb_selection",//DEV this will evaluate to same as default bind. Must make sure not to warn user about this one.
@@ -103,7 +108,7 @@
         "move_down":"KEY_DOWN",
         "move_left":"KEY_LEFT",
         "move_right":"KEY_RIGHT",
-        "climbing":"null",
+        "climb":"null",
         "cancel_last_action":"walking/move_up",
         "recover_stamina":"KEY_V"
       },
@@ -127,97 +132,135 @@
       },
       "null":"KEY_0"
     }
-  }
+  },
+
   "mappings": {
-    /*
+
+    "left_click":{
+      "left_click", //this line may be way more complex than it appears
+      "MOD_ARM",
+      "input_down":"manual_limb_selection/left_hand", // activates instantaneously when mapping is activated
+      "input_up":"climbing/manual_limb_selection" // activates instantaneously when mapping is deactivated
+    },
+
+    "right_click":{
+      "MOD_ARM",
+      "input_down":"manual_limb_selection/right_hand",
+      "input_up":"climbing/manual_limb_selection"
+    },
+
+    "middle_click":{
+      "input_short":{
+        "input_arguments": [200], //input_short activates instantaneously if it is pressed and released within 200ms window
+        "quick_actions/alternate_quick_actions"
+      }
+      "input_variable":{
+        "input_arguments": ["var_selection"] //one arg in input_variable means read the value of that variable and send whatever is there.
+      }
+    },
+
+    "back_thumb":{
+      "MOD_ARM",
+      "input_delayed":{
+        "input_arguments": [0,200], // input_arguments is based on whatever input type it is nested in. In this case it means there is a 0ms delay on activation, and a 200ms delay on deactivation.
+        "walking/take_a_running_start"
+      },
+      "input_down":"manual_limb_selection/right_foot",
+      "input_up":"climbing/manual_limb_selection"
+    },
+
+    "forward_thumb":{
+      "MOD_ARM",
+      "walking/speed_walk",
+      "input_down":"manual_limb_selection/left_foot",
+      "input_up":"climbing/manual_limb_selection"
+    },
+
+    "sniper":"MOD_MOV",
+
+    "G7":"climbing/recover_stamina",
+
+    "G8":{
+      "walking_and_climbing/interact",
+      "backpack/use"
+    },
+
+    "G9":{
+      "input_short":{
+        "input_arguments": [499],
+        "input_cycle": ["walking_and_climbing/scope_the_wall","remote_view/display_route"]
+      },
+      "input_long":{
+        "input_arguments": [500], // input goes through after remaining held for at least 500ms
+        "KEY_ESC"
+      }
+    },
+
+    //Because the analog inputs are omitted here they should simply behave as normal.
     
-    Modifiers: MOD_MOV, MOD_ARM
-    //MOV_MOD must prevent MOD_ARM so player can look around while strafing.
-    //MOD_ARM has multiple activators. MOD_ARM stays active as long as any one of them is active.
-    
-    //MOVEMENT
-    sniper://Consider making forward thumb button into movement button
-        Controls MOD_MOV.
-        MOD_MOV+sniper = walking/move_up
-        MOD_MOV+sniper+left_click = walking/move_left
-        MOD_MOV+sniper+right_click = walking/move_right
-        MOD_MOV+sniper+left_click+right_click = walking/move_down
-    
-    //LIMBS SECTION
-    left_click:
-        case MOD_MOV:
-            if right_click:
-                walking/move_down
-            else:
-                walking/move_left
-        default:
-            Activates MOD_ARM.
-            Sends left_click.
-            Down sends manual_limb_selection/left_hand.
-            Up sends climbing/manual_limb_selection.
-    right_click:
-        case MOD_MOV:
-            if not left_click:
-                walking/move_right
-        default:
-            Activates MOD_ARM.
-            Down sends manual_limb_selection/right_hand.//also backpack/use
-            Up sends climbing/manual_limb_selection.
-    forward_thumb:
-        Activates MOD_ARM.
-        Sends walking/speed_walk.//also rotates in backpack
-        Down sends manual_limb_selection/left_foot.
-        Up sends climbing/manual_limb_selection.
-    back_thumb:
-        Activates MOD_ARM.
-        Sends walking/take_a_running_start with *barely* delayed release.//also rotates in backpack
-        Down sends manual_limb_selection/right_foot.
-        Up sends climbing/manual_limb_selection.//jump is bound to manual_limb_selection. This jumps when running_start is released.
-    analog:
-        normal unless MOD_ARM is active then intercept and send climbing/move_x
-        
-    //D-PAD SECTION
-    //Requires selection variable and timer to detect second press. This timer should be set to as long as the d-pad fade-out.
-    global selection variable
-    scroll_up:
-        if second press: send quick_actions/alternate_quick_actions
-        selection = quick_actions/action_3;
-        send selection (this is a brief tap to show d-pad, not enough to choose selection)
-    scroll_down:
-        if second press: send quick_actions/alternate_quick_actions
-        selection = quick_actions/action_1;
-        send selection (this is a brief tap to show d-pad, not enough to choose selection)
-    scroll_left:
-        if second press: send quick_actions/alternate_quick_actions
-        selection = quick_actions/action_2;
-        send selection (this is a brief tap to show d-pad, not enough to choose selection)
-    scroll_right:
-        if second press: send quick_actions/alternate_quick_actions
-        selection = quick_actions/action_4;
-        send selection (this is a brief tap to show d-pad, not enough to choose selection)
-    middle_click:
-        send selection (finally able to be held) //DEV make sure this doesn't make phantom key if selection is changed while holding.
-    
-    //MAP
-    bool phase;
-    G9:
-        short:
-            if phase:
-                send remote_view/display_route
-            else:
-                send walking_and_climbing/scope_the_wall
-            phase = !phase;
-        long:
-            send KEY_ESC;
-    
-    G8://the forward one
-        Sends walking_and_climbing/interact as well as backpack/use.
-    
-    G7://the further back one
-        Sends climbing/recover_stamina.(has two matched binds)
-    
-    It would be REALLY cool if you could trigger "backpack/shake up bag" by moving the mouse up and down very quickly. Maybe I'll add a bonus input handler.
-    
-    */
+    "scroll_up":{
+      "input_variable":{
+        "input_arguments": ["var_selection","quick_actions/action_3"] //two args in input_variable. Write "quick_actions/action_3" to "var_selection".
+      },
+      "input_delayed":{
+        "input_arguments": [0,200],
+        "quick_actions/action_3"
+      }
+    },
+
+    "scroll_down":{
+      "input_variable":{
+        "input_arguments": ["var_selection","quick_actions/action_1"]
+      },
+      "input_delayed":{
+        "input_arguments": [0,200],
+        "quick_actions/action_1"
+      }
+    },
+
+    "scroll_left":{
+      "input_variable":{
+        "input_arguments": ["var_selection","quick_actions/action_2"]
+      },
+      "input_delayed":{
+        "input_arguments": [0,200],
+        "quick_actions/action_2"
+      }
+    },
+
+    "scroll_right":{
+      "input_variable":{
+        "input_arguments": ["var_selection","quick_actions/action_4"]
+      },
+      "input_delayed":{
+        "input_arguments": [0,200],
+        "quick_actions/action_4"
+      }
+    }
+
+    //Because the following entries were not defined inside input, the program knows to treat them as modifiers.
+    "MOD_MOV":{
+      "left_click":{ //overrides default left_click functionality while MOD_MOV is active.
+        "input_combo":"left_and_right_click",
+        "walking/move_left"
+      },
+      "right_click":{
+        "input_combo":"left_and_right_click",
+        "walking/move_right"
+      },
+      "left_and_right_click":{
+        "careful":false, // this means that the combo input will not cause any masking delay on left or right click. Additionally the full combo does not need to be released to transition back to a solo left or a right click.
+        "walking/move_down"
+      },
+      "input_passive":"walking/move_up" // input_passive activates when nothing else in scope is active.
+    },
+
+    "MOD_ARM":{
+      // MOD_ARM has multiple activators it should stay active as long as any one of them is activated.
+      "analog_up":"climbing/move_up",
+      "analog_down":"climbing/move_down",
+      "analog_left":"climbing/move_left",
+      "analog_right":"climbing/move_right"
+    }
   }
 }

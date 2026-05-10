@@ -1,31 +1,35 @@
+// Scroll down to USER-DEFINED SECTION!
+
 {
   "device":{
     "name":"Logitech G502 X Lightspeed",
-    "id":"046d:409f"
+    "id":"046d:409f" // This is the wireless ID. It is different when plugged in.
   },
-
+  
+  // inputs acquired via evtest
   // see https://docs.rs/evdev/latest/evdev/struct.KeyCode.html for acceptable io values
   "input":{
     "left_click":"BTN_LEFT",
     "right_click":"BTN_RIGHT",
     "middle_click":"BTN_MIDDLE",
-    "back_thumb":"BTN_BACK",
-    "forward_thumb":"BTN_FORWARD",
-    "sniper":"BTN_6",//INCORRECT FOR G502
-    "G7":"BTN_7",//INCORRECT FOR G502
-    "G8":"BTN_8",//INCORRECT FOR G502
-    "G9":"BTN_9",//INCORRECT FOR G502
-    "analog_up":{ "axis":"REL_Y", "delta":-1 },// Will need a unique handler for RELs unless evdev has something built in
-    "analog_down":{ "axis":"REL_Y", "delta":1 },
-    "analog_left":{ "axis":"REL_X", "delta":-1 },
-    "analog_right":{ "axis":"REL_X", "delta":1 },
+    "back_thumb":"BTN_SIDE",
+    "forward_thumb":"BTN_EXTRA",
+    "sniper":"BTN_FORWARD",
+    "G7":"BTN_BACK",
+    "G8":"BTN_TASK",
+    "G9":280,
+    "analog_up":{ "axis":"REL_Y", "delta":-1, "noisy": true },
+    "analog_down":{ "axis":"REL_Y", "delta":1, "noisy": true },
+    "analog_left":{ "axis":"REL_X", "delta":-1, "noisy": true },
+    "analog_right":{ "axis":"REL_X", "delta":1, "noisy": true },
     "scroll_up":{ "axis":"REL_WHEEL", "delta":1 },
     "scroll_down":{ "axis":"REL_WHEEL", "delta":-1 },
     "scroll_left":{ "axis":"REL_HWHEEL", "delta":-1 },
     "scroll_right":{ "axis":"REL_HWHEEL", "delta":1 }
   },
+
   "output":{
-    // Do not change this. These are the game's default controls.
+    // DO NOT CHANGE THIS! These are the game's default controls.
     // Instead, add entries to "rebound" mirroring the structure found here.
     "default":{//DEV program should be able to run without a default section as long as all used outputs have mappings
       "walking":{//handled
@@ -92,7 +96,8 @@
 /****************************************************************\
 )                USER-DEFINED SECTION STARTS HERE                (
 \****************************************************************/
-    "rebound": {//DEV program should be able to run without a rebound section as long as all used outputs have mappings. //DEV warn user about rebinds at program start
+    // see https://docs.rs/evdev/latest/evdev/struct.KeyCode.html for acceptable io values
+    "rebinds": {//DEV program should be able to run without a rebinds section as long as all used outputs have mappings. //DEV warn user about rebinds at program start
       // Use the same structure here as in the "default" section above.
       "walking":{
         "jump":"climbing/manual_limb_selection",//DEV this will evaluate to same as default bind. Must make sure not to warn user about this one.
@@ -103,7 +108,7 @@
         "move_down":"KEY_DOWN",
         "move_left":"KEY_LEFT",
         "move_right":"KEY_RIGHT",
-        "climbing":"null",
+        "climb":"null",
         "cancel_last_action":"walking/move_up",
         "recover_stamina":"KEY_V"
       },
@@ -127,97 +132,117 @@
       },
       "null":"KEY_0"
     }
-  }
+  },
+
   "mappings": {
-    /*
-    
-    Modifiers: MOD_MOV, MOD_ARM
-    //MOV_MOD must prevent MOD_ARM so player can look around while strafing.
-    //MOD_ARM has multiple activators. MOD_ARM stays active as long as any one of them is active.
-    
-    //MOVEMENT
-    sniper://Consider making forward thumb button into movement button
-        Controls MOD_MOV.
-        MOD_MOV+sniper = walking/move_up
-        MOD_MOV+sniper+left_click = walking/move_left
-        MOD_MOV+sniper+right_click = walking/move_right
-        MOD_MOV+sniper+left_click+right_click = walking/move_down
-    
-    //LIMBS SECTION
-    left_click:
-        case MOD_MOV:
-            if right_click:
-                walking/move_down
-            else:
-                walking/move_left
-        default:
-            Activates MOD_ARM.
-            Sends left_click.
-            Down sends manual_limb_selection/left_hand.
-            Up sends climbing/manual_limb_selection.
-    right_click:
-        case MOD_MOV:
-            if not left_click:
-                walking/move_right
-        default:
-            Activates MOD_ARM.
-            Down sends manual_limb_selection/right_hand.//also backpack/use
-            Up sends climbing/manual_limb_selection.
-    forward_thumb:
-        Activates MOD_ARM.
-        Sends walking/speed_walk.//also rotates in backpack
-        Down sends manual_limb_selection/left_foot.
-        Up sends climbing/manual_limb_selection.
-    back_thumb:
-        Activates MOD_ARM.
-        Sends walking/take_a_running_start with *barely* delayed release.//also rotates in backpack
-        Down sends manual_limb_selection/right_foot.
-        Up sends climbing/manual_limb_selection.//jump is bound to manual_limb_selection. This jumps when running_start is released.
-    analog:
-        normal unless MOD_ARM is active then intercept and send climbing/move_x
-        
-    //D-PAD SECTION
-    //Requires selection variable and timer to detect second press. This timer should be set to as long as the d-pad fade-out.
-    global selection variable
-    scroll_up:
-        if second press: send quick_actions/alternate_quick_actions
-        selection = quick_actions/action_3;
-        send selection (this is a brief tap to show d-pad, not enough to choose selection)
-    scroll_down:
-        if second press: send quick_actions/alternate_quick_actions
-        selection = quick_actions/action_1;
-        send selection (this is a brief tap to show d-pad, not enough to choose selection)
-    scroll_left:
-        if second press: send quick_actions/alternate_quick_actions
-        selection = quick_actions/action_2;
-        send selection (this is a brief tap to show d-pad, not enough to choose selection)
-    scroll_right:
-        if second press: send quick_actions/alternate_quick_actions
-        selection = quick_actions/action_4;
-        send selection (this is a brief tap to show d-pad, not enough to choose selection)
-    middle_click:
-        send selection (finally able to be held) //DEV make sure this doesn't make phantom key if selection is changed while holding.
-    
-    //MAP
-    bool phase;
-    G9:
-        short:
-            if phase:
-                send remote_view/display_route
-            else:
-                send walking_and_climbing/scope_the_wall
-            phase = !phase;
-        long:
-            send KEY_ESC;
-    
-    G8://the forward one
-        Sends walking_and_climbing/interact as well as backpack/use.
-    
-    G7://the further back one
-        Sends climbing/recover_stamina.(has two matched binds)
-    
-    It would be REALLY cool if you could trigger "backpack/shake up bag" by moving the mouse up and down very quickly. Maybe I'll add a bonus input handler.
-    
-    */
+
+    // === MOVEMENT ===
+    // "modifier": activates a named flag while held. output is sent while held,
+    // but suppressed if any input in output_blocked_by is also held (those handle direction).
+    // MOD_MOV gates MOD_ARM: arm-type mappings check blocked_by and skip if MOD_MOV is active.
+    "sniper": { // Consider making forward_thumb into the movement button instead
+      "type": "modifier",
+      "flag": "MOD_MOV",
+      "output": "walking/move_up",
+      "output_blocked_by": ["left_click", "right_click"]
+    },
+
+    // === LIMBS ===
+    // "conditional": cases are checked in order; first match fires. "also_held" and "none_held"
+    // are additional per-case input guards on top of the flag check.
+    // "arm": activates flag, sends primary while held (if given), sends down/up on press/release.
+    //   passthrough: true re-emits the physical button so the game also sees the raw click.
+    //   blocked_by: arm behavior is fully suppressed if that flag is active.
+    "left_click": {
+      "type": "conditional",
+      "cases": [
+        { "flag": "MOD_MOV", "also_held": ["right_click"], "output": "walking/move_down" },
+        { "flag": "MOD_MOV",                               "output": "walking/move_left"  }
+      ],
+      "default": {
+        "type": "arm",
+        "flag": "MOD_ARM",
+        "blocked_by": "MOD_MOV",
+        "passthrough": true,
+        "down": "manual_limb_selection/left_hand",
+        "up":   "climbing/manual_limb_selection"
+      }
+    },
+
+    "right_click": {
+      "type": "conditional",
+      "cases": [
+        { "flag": "MOD_MOV", "none_held": ["left_click"], "output": "walking/move_right" }
+      ],
+      "default": {
+        "type": "arm",
+        "flag": "MOD_ARM",
+        "blocked_by": "MOD_MOV",
+        "down": "manual_limb_selection/right_hand", // also backpack/use via shared rebind
+        "up":   "climbing/manual_limb_selection"
+      }
+    },
+
+    "forward_thumb": { // also rotates in backpack via walking/speed_walk
+      "type": "arm",
+      "flag": "MOD_ARM",
+      "blocked_by": "MOD_MOV",
+      "primary": "walking/speed_walk",
+      "down": "manual_limb_selection/left_foot",
+      "up":   "climbing/manual_limb_selection"
+    },
+
+    // release_delay_ms: primary key is held this many ms after button release.
+    // walking/jump = climbing/manual_limb_selection so releasing back_thumb
+    // triggers a jump while running_start is still briefly active.
+    "back_thumb": { // also rotates in backpack via walking/take_a_running_start
+      "type": "arm",
+      "flag": "MOD_ARM",
+      "blocked_by": "MOD_MOV",
+      "primary": "walking/take_a_running_start",
+      "release_delay_ms": 50,
+      "down": "manual_limb_selection/right_foot",
+      "up":   "climbing/manual_limb_selection"
+    },
+
+    // "analog_intercept": passes REL events through normally; when flag is active,
+    // suppresses passthrough and sends the intercepted output key instead.
+    "analog_up":    { "type": "analog_intercept", "flag": "MOD_ARM", "intercepted": "climbing/move_up"    },
+    "analog_down":  { "type": "analog_intercept", "flag": "MOD_ARM", "intercepted": "climbing/move_down"  },
+    "analog_left":  { "type": "analog_intercept", "flag": "MOD_ARM", "intercepted": "climbing/move_left"  },
+    "analog_right": { "type": "analog_intercept", "flag": "MOD_ARM", "intercepted": "climbing/move_right" },
+
+    // === D-PAD ===
+    // "dpad_scroll": sets the shared selection variable and taps it briefly (enough to show
+    // the d-pad overlay but not long enough to commit). If the same direction is scrolled again
+    // within the d-pad fade-out window, sends alternate instead of tapping selection again.
+    "scroll_up":    { "type": "dpad_scroll", "selection": "quick_actions/action_3", "alternate": "quick_actions/alternate_quick_actions" },
+    "scroll_down":  { "type": "dpad_scroll", "selection": "quick_actions/action_1", "alternate": "quick_actions/alternate_quick_actions" },
+    "scroll_left":  { "type": "dpad_scroll", "selection": "quick_actions/action_2", "alternate": "quick_actions/alternate_quick_actions" },
+    "scroll_right": { "type": "dpad_scroll", "selection": "quick_actions/action_4", "alternate": "quick_actions/alternate_quick_actions" },
+
+    // "dpad_confirm": holds the current selection output for as long as the button is held.
+    // If selection changes while held, the old key must be released before the new one fires.
+    "middle_click": { "type": "dpad_confirm" },
+
+    // === MAP / MISC ===
+    // "short_long": fires "short" on quick release, "long" if held past threshold.
+    // "phase_toggle": owns a bool that flips each press; sends phase_false when false, phase_true when true.
+    // "long" uses a raw key code (KEY_ESC is not in the output table; implementation falls back to parse_key_code).
+    "G9": {
+      "type": "short_long",
+      "short": {
+        "type": "phase_toggle",
+        "phase_false": "walking_and_climbing/scope_the_wall",
+        "phase_true":  "remote_view/display_route"
+      },
+      "long": "KEY_ESC"
+    },
+
+    // "multi": presses all listed outputs simultaneously; game context determines which fires.
+    "G8": { "type": "multi", "outputs": ["walking_and_climbing/interact", "backpack/use"] },
+
+    // walking/recall_climbot is also rebound to climbing/recover_stamina, so both resolve to KEY_V.
+    "G7": "climbing/recover_stamina"
   }
 }
