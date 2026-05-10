@@ -42,6 +42,6 @@ Syntax: `steam-wrapper <profile> [--wrap %command%] [--print-noisy]`
 
 {Make a list of things that you need to fix, improve, and add in the future.}
 
-- Write documentation for profile.json5 format
-- Item 2
+- Write exhaustive documentation for profile.json5 format
+- Develop GUI for easy profile creation
 - Item 3
