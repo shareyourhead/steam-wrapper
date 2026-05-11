@@ -5,19 +5,29 @@ use std::path::PathBuf;
 pub struct CliArgs {
     pub profile_path: PathBuf,
     pub print_noisy: bool,
+    pub wrap_command: Option<Vec<String>>,
 }
 
 pub fn parse_args() -> Result<CliArgs> {
     let mut profile_name: Option<String> = None;
     let mut print_noisy = false;
+    let mut wrap_command: Option<Vec<String>> = None;
 
-    for arg in env::args().skip(1) {
-        if arg == "--print-noisy" {
-            print_noisy = true;
-        } else if arg.starts_with('-') {
-            return Err(anyhow::anyhow!("Unknown flag: {}", arg));
-        } else if profile_name.is_none() {
-            profile_name = Some(arg);
+    let mut args_iter = env::args().skip(1);
+    while let Some(arg) = args_iter.next() {
+        match arg.as_str() {
+            "--print-noisy" => print_noisy = true,
+            "--wrap" => {
+                let remaining: Vec<String> = args_iter.collect();
+                if remaining.is_empty() {
+                    return Err(anyhow::anyhow!("--wrap requires a command"));
+                }
+                wrap_command = Some(remaining);
+                break;
+            }
+            s if s.starts_with('-') => return Err(anyhow::anyhow!("Unknown flag: {}", s)),
+            _ if profile_name.is_none() => profile_name = Some(arg),
+            _ => {}
         }
     }
 
@@ -41,5 +51,5 @@ pub fn parse_args() -> Result<CliArgs> {
         return Err(anyhow::anyhow!("{} not found", profile_file));
     }
 
-    Ok(CliArgs { profile_path: full_path, print_noisy })
+    Ok(CliArgs { profile_path: full_path, print_noisy, wrap_command })
 }

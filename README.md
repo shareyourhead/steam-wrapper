@@ -1,6 +1,7 @@
 # Overview
 
 Steam wrapper is a complex rebinding program that...
+For use on Ubuntu 25+
 
 {Important! Do not say in this section that this is college assignment. Talk about what you are trying to accomplish as a software engineer to further your learning.}
 
@@ -36,7 +37,7 @@ Syntax: `steam-wrapper <profile> [--wrap %command%] [--print-noisy]`
 
 - [evdev key codes](https://docs.rs/evdev/latest/evdev/struct.KeyCode.html)
 - [evdev relative axis codes](https://docs.rs/evdev/latest/evdev/struct.RelativeAxisCode.html)
-- [Web Site Name](http://url.link.goes.here)
+- [keyboard checker](https://keyboardchecker.com/)
 
 # Future Work
 

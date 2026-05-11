@@ -11,7 +11,7 @@ mod output;
 
 pub use device::DeviceConfig;
 pub use input::InputDef;
-pub use mappings::MappingDef;
+pub use mappings::{ComplexMapping, InputSimple, MappingDef, ModifierDef};
 pub use output::{OutputSection, print_rebinds};
 
 #[derive(Deserialize)]

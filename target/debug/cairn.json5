@@ -25,7 +25,8 @@
     "scroll_up":{ "axis":"REL_WHEEL", "delta":1 },
     "scroll_down":{ "axis":"REL_WHEEL", "delta":-1 },
     "scroll_left":{ "axis":"REL_HWHEEL", "delta":-1 },
-    "scroll_right":{ "axis":"REL_HWHEEL", "delta":1 }
+    "scroll_right":{ "axis":"REL_HWHEEL", "delta":1 },
+    "unbound":"KEY_RESERVED"
   },
 
   "output":{
@@ -108,9 +109,10 @@
         "move_down":"KEY_DOWN",
         "move_left":"KEY_LEFT",
         "move_right":"KEY_RIGHT",
-        "climb":"null",
+        "climb":"unbound",
         "cancel_last_action":"walking/move_up",
-        "recover_stamina":"KEY_V"
+        "recover_stamina":"KEY_V",
+        "fall_rewind":"unbound"
       },
       "manual_limb_selection": {
         "left_hand": "KEY_L",
@@ -129,18 +131,15 @@
         "compost":"climbing/recover_stamina",
         "rotate_left": "walking/take_a_running_start",
         "rotate_right": "walking/speed_walk"
-      },
-      "null":"KEY_0"
+      }
     }
   },
 
   "mappings": {
 
     "left_click":{
-      "input_simple":[
-        "left_click", //accomplishing this may be way more complex than it seems
-        "MOD_ARM"
-      ],
+      "input_passthrough":true,
+      "input_simple":"MOD_ARM",
       "input_down":"manual_limb_selection/left_hand", // activates instantaneously when mapping is activated
       "input_up":"climbing/manual_limb_selection" // activates instantaneously when mapping is deactivated
     },

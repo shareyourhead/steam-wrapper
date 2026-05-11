@@ -1,4 +1,4 @@
 cargo:rerun-if-changed=profiles/
+cargo:warning=Copied profiles/dungeons.json5 -> target/debug/dungeons.json5
 cargo:warning=Copied profiles/cairn.json5 -> target/debug/cairn.json5
-cargo:warning=Copied profiles/one-to-one.json5 -> target/debug/one-to-one.json5
 cargo:warning=Copied profiles/cairn-backup.json5 -> target/debug/cairn-backup.json5
