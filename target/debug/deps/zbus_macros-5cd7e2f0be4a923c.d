@@ -1,0 +1,10 @@
+/home/tjnewbry/Documents/Syncthing/School/2026.04-BYU-I_spring/CSE310/sprint1/steam-wrapper/target/debug/deps/zbus_macros-5cd7e2f0be4a923c.d: /home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/lib.rs /home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/error.rs /home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/iface.rs /home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/proxy.rs /home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/utils.rs /home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/../README.md
+
+/home/tjnewbry/Documents/Syncthing/School/2026.04-BYU-I_spring/CSE310/sprint1/steam-wrapper/target/debug/deps/libzbus_macros-5cd7e2f0be4a923c.so: /home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/lib.rs /home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/error.rs /home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/iface.rs /home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/proxy.rs /home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/utils.rs /home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/../README.md
+
+/home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/lib.rs:
+/home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/error.rs:
+/home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/iface.rs:
+/home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/proxy.rs:
+/home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/utils.rs:
+/home/tjnewbry/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/zbus_macros-4.4.0/src/../README.md:

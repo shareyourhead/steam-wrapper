@@ -1,0 +1,101 @@
+{
+  "device":{
+    "name":"Logitech G502 X Lightspeed",
+    "id":"046d:409f" // This is the wireless ID. It is different when plugged in.
+  },
+  
+  // inputs acquired via evtest
+  // see https://docs.rs/evdev/latest/evdev/struct.KeyCode.html for acceptable io values
+  "input":{
+    "left_click":"BTN_LEFT",
+    "right_click":"BTN_RIGHT",
+    "middle_click":"BTN_MIDDLE",
+    "back_thumb":"BTN_SIDE",
+    "forward_thumb":"BTN_EXTRA",
+    "sniper":"BTN_FORWARD",
+    "G7":"BTN_BACK",
+    "G8":"BTN_TASK",
+    "G9":280,
+    "analog_up":{ "axis":"REL_Y", "delta":-1, "noisy": true },
+    "analog_down":{ "axis":"REL_Y", "delta":1, "noisy": true },
+    "analog_left":{ "axis":"REL_X", "delta":-1, "noisy": true },
+    "analog_right":{ "axis":"REL_X", "delta":1, "noisy": true },
+    "scroll_up":{ "axis":"REL_WHEEL", "delta":1 },
+    "scroll_down":{ "axis":"REL_WHEEL", "delta":-1 },
+    "scroll_left":{ "axis":"REL_HWHEEL", "delta":-1 },
+    "scroll_right":{ "axis":"REL_HWHEEL", "delta":1 },
+    "unbound":"KEY_RESERVED"
+  },
+
+  "output":{
+    "default":{
+      "combat":{
+        "melee_attack-interact":"BTN_LEFT",
+        "melee_attack":"combat/melee_attack-interact",
+        "interact":"combat/melee_attack-interact",
+        "ranged_attack":"BTN_RIGHT",
+        "use_item_1":"KEY_1",
+        "use_item_2":"KEY_2",
+        "use_item_3":"KEY_3",
+        "heal":"KEY_E",
+        "root_player-elytra_dive":"KEY_LEFTSHIFT",
+        "root_player":"combat/root_player-elytra_dive",
+        "elytra_dive":"combat/root_player-elytra_dive",
+        "forward_roll":"KEY_SPACE",
+        "directional_roll":"BTN_SIDE"
+      },
+      "online":{
+        "teleport":"KEY_F1",
+        "teleport_to_friend_1":"KEY_F2",
+        "teleport_to_friend_2":"KEY_F3",
+        "teleport_to_friend_3":"KEY_F4",
+        "chat_wheel":"KEY_T"
+      },
+      "other":{
+        "pause_menu":"KEY_ESC", //cannot be rebound
+        "friends_menu":"KEY_F",
+        "full_map":"KEY_M",
+        "map_overlay":"KEY_TAB",
+        "open_inventory":"KEY_I",
+        "emote":"KEY_B"
+      },
+      "chat":{
+        "come_here":"KEY_R",
+        "thanks":"KEY_K",
+        "ok":"KEY_N",
+        "need_arrows":"KEY_Y",
+        "wait":"KEY_U",
+        "need_health":"KEY_Z",
+        "no":"KEY_Q",
+        "supplies_here":"KEY_W"
+      }
+    },
+    "rebinds":{
+      "combat":{
+        "ranged_attack":"KEY_8",
+        "use_item_1":"KEY_6",
+        "use_item_2":"forward_thumb",
+        "use_item_3":"back_thumb",
+        "heal":"KEY_7",
+        "forward_roll":"KEY_R",
+        "directional_roll":"right_click"
+      },
+      "other":{
+        "full_map":"KEY_LEFTBRACE",
+        "open_inventory":"middle_click"
+      },
+      "chat":{
+        "come_here":"unbound"
+      }
+    }
+  },
+
+  "mappings":{
+    "sniper":"combat/use_item_1",
+    "G7":"combat/heal",
+    "G8":"combat/ranged_attack",
+    "G9":"other/pause_menu",
+    "scroll_left":"other/full_map",
+    "scroll_right":"other/map_overlay"
+  }
+}
