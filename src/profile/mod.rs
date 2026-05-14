@@ -12,7 +12,7 @@ mod output;
 pub use device::DeviceConfig;
 pub use input::InputDef;
 pub use mappings::{ComplexMapping, InputSimple, MappingDef, ModifierDef};
-pub use output::{OutputSection, print_rebinds};
+pub use output::OutputSection;
 
 #[derive(Deserialize)]
 pub struct Profile {

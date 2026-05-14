@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use serde::Deserialize;
 use std::collections::HashMap;
 
@@ -31,9 +29,11 @@ pub struct ComplexMapping {
     pub input_long: Option<TimedMapping>,
     pub input_delayed: Option<DelayedMapping>,
     pub input_variable: Option<VariableMapping>,
+    #[allow(dead_code)]
     pub input_combo: Option<String>,
     /// Combo entry args: (output_key, careful). `careful=false` means no
     /// masking delay when transitioning between solo and combo states.
+    #[allow(dead_code)]
     pub input_arguments: Option<(String, bool)>,
 }
 
@@ -47,6 +47,7 @@ pub enum InputSimple {
 
 /// Used by both `input_short` (fire if released within N ms) and
 /// `input_long` (fire after held for N ms). Contains exactly one action.
+#[allow(dead_code)]
 #[derive(Deserialize)]
 pub struct TimedMapping {
     pub input_arguments: (u64,),
@@ -56,6 +57,7 @@ pub struct TimedMapping {
 
 /// `input_delayed`: wrap an output with independent activation/deactivation delays.
 /// `input_arguments`: (delay_on_ms, delay_off_ms).
+#[allow(dead_code)]
 #[derive(Deserialize)]
 pub struct DelayedMapping {
     pub input_arguments: (u64, u64),
@@ -65,11 +67,13 @@ pub struct DelayedMapping {
 /// `input_variable`:
 /// - 1 arg `[var_name]` → read variable and hold its current value
 /// - 2 args `[var_name, value]` → write value to variable
+#[allow(dead_code)]
 #[derive(Deserialize)]
 pub struct VariableMapping {
     pub input_arguments: VariableArgs,
 }
 
+#[allow(dead_code)]
 #[derive(Deserialize)]
 #[serde(untagged)]
 pub enum VariableArgs {

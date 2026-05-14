@@ -32,7 +32,7 @@ pub fn parse_args() -> Result<CliArgs> {
     }
 
     let profile_name = profile_name
-        .ok_or_else(|| anyhow::anyhow!("Usage: steam-wrapper <profile> [--print-noisy]"))?;
+        .ok_or_else(|| anyhow::anyhow!("Usage: steam-wrapper <profile> [--print-noisy] [--wrap <command...>]"))?;
 
     let profile_file = if profile_name.ends_with(".json5") {
         profile_name

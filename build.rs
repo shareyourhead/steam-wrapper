@@ -2,11 +2,9 @@ use std::fs;
 use std::path::Path;
 
 fn main() {
-
-    //Copy all .json5 files from ./profiles to ./target/debug
-
+    let profile = std::env::var("PROFILE").unwrap_or_else(|_| "debug".to_string());
     let profiles_dir = Path::new("profiles");
-    let out_dir = Path::new("target/debug");
+    let out_dir = Path::new("target").join(&profile);
 
     // Tell Cargo to re-run this script if anything in profiles/ changes
     println!("cargo:rerun-if-changed=profiles/");

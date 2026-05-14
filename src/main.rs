@@ -1,9 +1,9 @@
 use anyhow::Result;
+use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 mod args;
-mod device;
 mod engine;
 mod input;
 mod mappings;
@@ -15,7 +15,7 @@ use args::parse_args;
 use engine::Engine;
 use input::{InputWatcher, run_event_loop};
 use mappings::build_mappings;
-use profile::{load_config, print_rebinds};
+use profile::load_config;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -26,11 +26,11 @@ async fn main() -> Result<()> {
 
     if config.output.has_rebinds() { println!("Resolving rebinds..."); }
     let output = config.output.resolve(&config.input)?;
-    let physical_inputs: std::collections::HashMap<String, evdev::KeyCode> = config.input.iter()
+    let physical_inputs: HashMap<String, evdev::KeyCode> = config.input.iter()
         .filter_map(|(name, def)| def.physical_key().map(|k| (name.clone(), k)))
         .collect();
 
-    let mappings = build_mappings(config.mappings, &output.bindings)?;
+    let mappings = build_mappings(config.mappings)?;
     let all_keys = output.bindings.values().copied()
         .chain(physical_inputs.values().copied());
     let sink = uinput::UInputSink::new(all_keys)?;
@@ -77,7 +77,7 @@ async fn main() -> Result<()> {
         )?);
     }
 
-    print_rebinds(&output);
+    output.print_rebinds();
 
     if let Some(command) = args.wrap_command {
         wrapper::run_wrapped(command, engine, stream, &mut watchers).await?;

@@ -880,7 +880,6 @@ dependencies = [
  "indexmap",
  "json5",
  "serde",
- "serde_json",
  "tokio",
  "zbus",
 ]

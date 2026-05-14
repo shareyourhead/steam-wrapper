@@ -1,21 +1,12 @@
 # Overview
 
-Steam wrapper is a complex rebinding program that...
-For use on Ubuntu 25+
+Steam wrapper is a mouse input mapping program that allows users to define different control profiles via json. The program can be included in the launch options of any game on Steam to launch the desired mapping profile automatically. This provides better support for uncommon mouse buttons, and extends the input options of games with limited rebinding capabilities.
 
-{Important! Do not say in this section that this is college assignment. Talk about what you are trying to accomplish as a software engineer to further your learning.}
-
-{Provide a description of the software that you wrote to demonstrate the Rust language.}
-
-{Describe your purpose for writing this software.}
-
-{Provide a link to your YouTube demonstration. It should be a 4-5 minute demo of the software running and a walkthrough of the code. Focus should be on sharing what you learned about the language syntax.}
-
-[Software Demo Video](http://youtube.link.goes.here)
+[Software Demo Video](https://youtu.be/uxtQbwNSJJw)
 
 ## Usage
 
-Place json5 files in same location as `steam-wrapper`.
+Place json5 files in same directory as `steam-wrapper`.
 
 Syntax: `steam-wrapper <profile> [--wrap %command%] [--print-noisy]`
 
@@ -27,13 +18,9 @@ Syntax: `steam-wrapper <profile> [--wrap %command%] [--print-noisy]`
 
 # Development Environment
 
-{Describe the tools that you used to develop the software}
-
-{Describe the programming language that you used and any libraries.}
+This program is written in rust. It depends the evdev package on linux to intercept inputs. It uses wayland for window detection, so either use a distro like Ubuntu 25+ or avoid using the --wrap flag.
 
 # Useful Websites
-
-{Make a list of websites that you found helpful in this project}
 
 - [evdev key codes](https://docs.rs/evdev/latest/evdev/struct.KeyCode.html)
 - [evdev relative axis codes](https://docs.rs/evdev/latest/evdev/struct.RelativeAxisCode.html)
@@ -41,8 +28,7 @@ Syntax: `steam-wrapper <profile> [--wrap %command%] [--print-noisy]`
 
 # Future Work
 
-{Make a list of things that you need to fix, improve, and add in the future.}
-
+- Finish implementing all advanced mapping methods defined in [cairn.json5](./profiles/cairn.json5)
+- Reduce size of binary
 - Write exhaustive documentation for profile.json5 format
 - Develop GUI for easy profile creation
-- Item 3

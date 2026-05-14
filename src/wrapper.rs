@@ -172,7 +172,16 @@ pub async fn run_wrapped(
                 break;
             }
             result = focus_rx.changed() => {
-                if result.is_err() { break; }
+                if result.is_err() {
+                    eprintln!("[wrapper] Warning: focus monitoring stopped — input grab state will not change");
+                    if grabbed {
+                        let _ = stream.device_mut().ungrab();
+                        engine.lock().unwrap().release_all();
+                    }
+                    let status = child.wait().await;
+                    println!("[wrapper] Game exited: {}", status?);
+                    break;
+                }
                 let focused = *focus_rx.borrow_and_update();
                 if focused && !grabbed {
                     stream.device_mut().grab()?;

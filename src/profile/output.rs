@@ -10,21 +10,14 @@ use super::input::InputDef;
 #[derive(Deserialize)]
 pub struct OutputSection {
     #[serde(default)]
-    default: IndexMap<String, DefaultEntry>,
+    default: IndexMap<String, OutputEntry>,
     #[serde(default)]
-    rebinds: IndexMap<String, ReboundEntry>,
+    rebinds: IndexMap<String, OutputEntry>,
 }
 
 #[derive(Deserialize)]
 #[serde(untagged)]
-enum DefaultEntry {
-    Context(IndexMap<String, String>),
-    Direct(String),
-}
-
-#[derive(Deserialize)]
-#[serde(untagged)]
-enum ReboundEntry {
+enum OutputEntry {
     Context(IndexMap<String, String>),
     Direct(String),
 }
@@ -37,33 +30,16 @@ pub struct ResolvedOutput {
     pub only_rebound: bool,
 }
 
-fn flatten_default(default: IndexMap<String, DefaultEntry>) -> IndexMap<String, String> {
+fn flatten_entries(entries: IndexMap<String, OutputEntry>) -> IndexMap<String, String> {
     let mut flat = IndexMap::new();
-    for (name, entry) in default {
+    for (name, entry) in entries {
         match entry {
-            DefaultEntry::Context(actions) => {
+            OutputEntry::Context(actions) => {
                 for (action, key) in actions {
                     flat.insert(format!("{}/{}", name, action), key);
                 }
             }
-            DefaultEntry::Direct(key) => {
-                flat.insert(name, key);
-            }
-        }
-    }
-    flat
-}
-
-fn flatten_rebound(rebound: IndexMap<String, ReboundEntry>) -> IndexMap<String, String> {
-    let mut flat = IndexMap::new();
-    for (name, entry) in rebound {
-        match entry {
-            ReboundEntry::Context(actions) => {
-                for (action, key) in actions {
-                    flat.insert(format!("{}/{}", name, action), key);
-                }
-            }
-            ReboundEntry::Direct(key) => {
+            OutputEntry::Direct(key) => {
                 flat.insert(name, key);
             }
         }
@@ -119,7 +95,7 @@ impl OutputSection {
 
         // Only default: parse directly, no merging or dereferencing needed
         if has_default && !has_rebound {
-            let flat = flatten_default(self.default);
+            let flat = flatten_entries(self.default);
             return Ok(ResolvedOutput {
                 bindings: parse_flat(flat)?,
                 rebinds: Vec::new(),
@@ -130,7 +106,7 @@ impl OutputSection {
         // Only rebound: dereference and mark all controls as needing rebind,
         // preserving JSON5 insertion order
         if !has_default && has_rebound {
-            let mut flat = flatten_rebound(self.rebinds);
+            let mut flat = flatten_entries(self.rebinds);
             // Capture display labels before resolution so input-name refs stay readable.
             let rebinds: Vec<(String, String)> = flat.iter()
                 .map(|(k, v)| (k.clone(), v.clone()))
@@ -144,13 +120,13 @@ impl OutputSection {
         }
 
         // Both: full resolve with merge and rebind detection
-        let default_flat = flatten_default(self.default);
+        let default_flat = flatten_entries(self.default);
         let default_order: Vec<String> = default_flat.keys().cloned().collect();
 
         let mut rebound_override_keys: HashSet<String> = HashSet::new();
         let mut merged_flat = default_flat.clone();
         let mut rebound_display: HashMap<String, String> = HashMap::new();
-        for (k, v) in flatten_rebound(self.rebinds) {
+        for (k, v) in flatten_entries(self.rebinds) {
             if default_flat.contains_key(&k) {
                 rebound_override_keys.insert(k.clone());
             }
@@ -180,16 +156,18 @@ impl OutputSection {
     }
 }
 
-pub fn print_rebinds(resolved: &ResolvedOutput) {
-    if resolved.rebinds.is_empty() {
-        return;
+impl ResolvedOutput {
+    pub fn print_rebinds(&self) {
+        if self.rebinds.is_empty() {
+            return;
+        }
+        println!("\nHEY YOU!\nRemember to rebind the following controls in-game:");
+        for (binding, display) in &self.rebinds {
+            println!("  {} -> {}", binding, display);
+        }
+        if !self.only_rebound {
+            println!("All other controls are default.");
+        }
+        println!();
     }
-    println!("\nHEY YOU!\nRemember to rebind the following controls in-game:");
-    for (binding, display) in &resolved.rebinds {
-        println!("  {} -> {}", binding, display);
-    }
-    if !resolved.only_rebound {
-        println!("All other controls are default.");
-    }
-    println!();
 }
